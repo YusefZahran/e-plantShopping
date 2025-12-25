@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './ProductList.css'
 import CartItem from './CartItem';
+import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-
+    const [addedToCart, setAddedToCart] = usestate({});
+    const dispatch = useDispatch()
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -253,6 +255,16 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+
+    const handleAddToCart = (product) => {
+        dispatch(addItem(product));
+
+        setAddedToCart((prevState) => ({
+            ...prevState,
+            [product.name]:true,
+        }));
+    };
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -276,16 +288,20 @@ function ProductList({ onHomeClick }) {
             {!showCart ? (
                 <div className="product-grid">
                     {plantsArray.map((collection, index) => (
-                        <div key={index} className='product-list'>
-                            <span>{collection.category}</span>
-                            {collection.plants.map((plant, index) => (
-                                <div key={index} className='product-card'>
-                                    <span className='product-title'>{plant.name}</span>
-                                    <img src={plant.image} className='producct-image'></img>
-                                    <div className='producct-price'>{plant.price}</div>
-
-                                </div>
-                            ))}
+                        <div>
+                            <span className='product-title' 
+                            style={{ textAlign: 'center', display: 'block', fontSize:26 }}>{collection.category}</span>
+                            <div key={index} className='product-list'>
+                                {collection.plants.map((plant, plantindex) => (
+                                    <div key={plantindex} className='product-card'>
+                                        <span className='product-title'>{plant.name}</span>
+                                        <img src={plant.image} className='product-image'></img>
+                                        <div className='product-price'>{plant.cost}</div>
+                                        <span>{plant.description}</span>
+                                        <button className='product-button' onClick={() => handleAddToCart(plant)}>Add to Cart</button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </div>
